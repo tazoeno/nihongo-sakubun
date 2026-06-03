@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>翻訳作文練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Noto+Sans+TC:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf6ee; --ink:#2c2a28; --muted:#8a8378; --line:#e3dccd;
+    --accent:#3a5a8c; --accent-soft:#eef2f8; --ok:#2f8f7e; --ok-soft:#e7f3f0;
+    --accent-lang:#3a5a8c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Zen Kaku Gothic New",sans-serif; line-height:1.7;
+    background-image:radial-gradient(var(--line) 0.5px, transparent 0.5px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:760px; margin:0 auto; padding:28px 18px 80px;}
+  header{margin-bottom:8px;}
+  h1{font-family:"Klee One",serif; font-weight:600; font-size:1.9rem; margin:0 0 4px; letter-spacing:.02em;}
+  .sub{color:var(--muted); font-size:.92rem; margin:0;}
+  .level{display:inline-block; margin-top:8px; font-size:.78rem; color:var(--accent);
+    background:var(--accent-soft); border:1px solid #d7e0ee; padding:2px 12px; border-radius:99px;}
+
+  .picker{position:sticky; top:0; z-index:5; margin:22px -18px 6px; padding:14px 18px;
+    background:rgba(250,246,238,.92); backdrop-filter:blur(6px); border-bottom:1px solid var(--line);}
+  .picker .lab{font-size:.8rem; color:var(--muted); margin-bottom:8px;}
+  .pills{display:flex; flex-wrap:wrap; gap:8px;}
+  .pill{border:1.5px solid var(--line); background:#fff; color:var(--ink);
+    padding:8px 15px; border-radius:99px; font-size:.92rem; cursor:pointer; transition:.18s;
+    font-family:inherit;}
+  .pill:hover{border-color:var(--accent-lang);}
+  .pill.on{background:var(--accent-lang); border-color:var(--accent-lang); color:#fff;}
+
+  .toolbar{display:flex; justify-content:flex-end; margin:14px 0 4px;}
+  .ghost{background:none; border:1px dashed var(--muted); color:var(--muted);
+    padding:6px 14px; border-radius:8px; font-size:.84rem; cursor:pointer; font-family:inherit;}
+  .ghost:hover{color:var(--ink); border-color:var(--ink);}
+
+  .card{background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:18px 18px 8px; margin:18px 0; box-shadow:0 1px 0 rgba(0,0,0,.02);}
+  .ptn{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .badge{font-family:"Klee One",serif; font-weight:600; color:#fff; background:var(--accent-lang);
+    width:30px; height:30px; min-width:30px; display:inline-flex; align-items:center; justify-content:center;
+    border-radius:8px; font-size:.95rem;}
+  .ptn h2{font-family:"Klee One",serif; font-weight:600; font-size:1.18rem; margin:0;}
+  .note{color:var(--muted); font-size:.84rem; margin:4px 0 14px 40px;}
+
+  .q{margin:0 0 18px; padding-left:40px; position:relative;}
+  .num{position:absolute; left:0; top:2px; color:var(--accent-lang); font-weight:700; font-size:.95rem;}
+  .cue{font-size:1.12rem; margin:0 0 8px;}
+  .cue.zh{font-family:"Noto Sans TC",sans-serif;}
+  .cue.si{font-family:"Noto Sans Sinhala",sans-serif; line-height:2;}
+  .cue.ne,.cue.hi{font-family:"Noto Sans Devanagari",sans-serif; line-height:1.9;}
+  textarea{width:100%; border:none; border-bottom:1.5px solid var(--line); background:transparent;
+    font-family:"Klee One",serif; font-size:1.1rem; color:var(--ink); padding:6px 2px; resize:none;
+    line-height:1.9; min-height:2.2em; outline:none;}
+  textarea:focus{border-color:var(--accent-lang);}
+  .reveal{margin-top:6px;}
+  .rbtn{background:none; border:none; color:var(--accent-lang); font-size:.82rem; cursor:pointer;
+    padding:2px 0; font-family:inherit;}
+  .ans{display:none; margin-top:6px; padding:8px 12px; background:var(--ok-soft);
+    border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    font-family:"Klee One",serif; font-size:1.08rem;}
+  .ans.show{display:block;}
+  .ans .tag{font-family:"Zen Kaku Gothic New",sans-serif; font-size:.72rem; color:var(--ok); display:block; margin-bottom:2px;}
+  footer{text-align:center; color:var(--muted); font-size:.78rem; margin-top:30px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>翻訳作文練習</h1>
+    <p class="sub" id="sub"></p>
+    <span class="level" id="level"></span>
+  </header>
+
+  <div class="picker">
+    <div class="lab">あなたの母語をえらんでください / 選擇你的母語</div>
+    <div class="pills" id="pills"></div>
+  </div>
+
+  <div class="toolbar">
+    <button class="ghost" id="toggleAll">答えをすべて表示</button>
+  </div>
+
+  <div id="content"></div>
+
+  <footer>母語のキューを見て、日本語に作文しましょう。</footer>
+</div>
+
+<script>
+const DATA = {"META":{"title":"翻訳作文練習","subtitle":"母語のキューを見て、日本語に作文しましょう","level":"中級〜中上級","langs":[{"key":"zh","label":"台湾華語（繁體中文）"},{"key":"si","label":"シンハラ語 (සිංහල)"},{"key":"ne","label":"ネパール語 (नेपाली)"},{"key":"hi","label":"ヒンディー語 (हिन्दी)"}]},"ITEMS":[{"id":"①","pattern":"N1ってN2","note":"〜という名前の／〜と呼ばれる","sentences":[{"ja":"田中って人、知ってる？","zh":"你認識一個叫田中的人嗎？","si":"ටනකා කියන කෙනෙක්ව ඔයා දන්නවද?","ne":"के तपाईं तानाका भन्ने मान्छेलाई चिन्नुहुन्छ?","hi":"क्या तुम तानाका नाम के एक आदमी को जानते हो?"},{"ja":"「すし」って料理は外国でも有名だ。","zh":"「壽司」這道料理在國外也很有名。","si":"\"සුෂි\" කියන කෑම විදේශවලත් ප්‍රසිද්ධයි.","ne":"\"सुशी\" भन्ने परिकार विदेशमा पनि प्रसिद्ध छ।","hi":"\"सुशी\" नाम का व्यंजन विदेश में भी मशहूर है।"},{"ja":"クロって名前の犬を飼っています。","zh":"我養了一隻名字叫「庫洛」的狗。","si":"මම \"කුරෝ\" කියන නමක් තියෙන බල්ලෙක් ඇති කරනවා.","ne":"मैले \"कुरो\" नाम भएको एउटा कुकुर पालेको छु।","hi":"मैंने \"कुरो\" नाम का एक कुत्ता पाला है।"}]},{"id":"②","pattern":"させてもらう／させてくれる","note":"許可・好意（〜させてくれた／許された）","sentences":[{"ja":"先生は私たちに自由に意見を言わせてくれた。","zh":"老師讓我們自由地發表意見。","si":"ගුරුතුමා අපිට නිදහසේ අදහස් කියන්න ඉඩ දුන්නා.","ne":"शिक्षकले हामीलाई स्वतन्त्र रूपमा विचार राख्न दिनुभयो।","hi":"शिक्षक ने हमें खुलकर अपनी राय रखने दी।"},{"ja":"体調が悪かったので、早退させてもらった。","zh":"因為身體不舒服，公司讓我提早離開了。","si":"ඇඟ සනීප නැති නිසා, මට කලින් යන්න ඉඩ දුන්නා.","ne":"सन्चो नभएकोले, मलाई चाँडै जान दिइयो।","hi":"तबीयत ठीक नहीं थी, इसलिए मुझे जल्दी जाने दिया गया।"},{"ja":"部長は私に新しいプロジェクトを担当させてくれた。","zh":"經理讓我負責新的專案。","si":"කළමනාකරු මට අලුත් ව්‍යාපෘතියේ වගකීම භාර ගන්න ඉඩ දුන්නා.","ne":"म्यानेजरले मलाई नयाँ परियोजनाको जिम्मा लिन दिनुभयो।","hi":"मैनेजर ने मुझे नए प्रोजेक्ट की ज़िम्मेदारी लेने दी।"}]},{"id":"③","pattern":"させられる","note":"強制・不本意（いやいや〜させられた）","sentences":[{"ja":"子どもの頃、毎日ピアノを練習させられた。","zh":"小時候，我每天都被逼著練鋼琴。","si":"පොඩි කාලේ, මට හැම දාම පියානෝ වයන්න බල කළා.","ne":"सानो छँदा, मलाई हरेक दिन पियानो अभ्यास गर्न लगाइन्थ्यो।","hi":"बचपन में, मुझे हर दिन पियानो का अभ्यास करवाया जाता था।"},{"ja":"無理やり約束させられた。","zh":"我被迫答應了。","si":"මට පොරොන්දු වෙන්න බල කළා.","ne":"मलाई करकाप गरेर बाचा गर्न लगाइयो।","hi":"मुझे ज़बरदस्ती वादा करवाया गया।"},{"ja":"会議で急に発表させられて、緊張した。","zh":"開會時突然被叫去做報告，我好緊張。","si":"රැස්වීමේදී මට හදිසියේම ඉදිරිපත් කරන්න බල කළ නිසා, මම කලබල වුණා.","ne":"मिटिङमा अचानक प्रस्तुति दिन लगाइएकोले, म नर्भस भएँ।","hi":"मीटिंग में अचानक प्रेज़ेंटेशन देने के लिए मजबूर किया गया, इसलिए मैं घबरा गया।"}]},{"id":"④","pattern":"〜がる","note":"第三者の感情の表れ（〜を欲しがる／怖がる）","sentences":[{"ja":"子どもが新しいおもちゃを欲しがっている。","zh":"小孩想要新玩具。","si":"දරුවාට අලුත් සෙල්ලම් බඩුවක් ඕනයි.","ne":"बच्चाले नयाँ खेलौना चाहन्छ।","hi":"बच्चा एक नया खिलौना चाहता है।"},{"ja":"妹は一人で留守番するのを怖がる。","zh":"妹妹害怕一個人看家。","si":"නංගි තනියම ගෙදර ඉන්න බයයි.","ne":"बहिनी एक्लै घरमा बस्न डराउँछिन्।","hi":"मेरी छोटी बहन अकेले घर पर रहने से डरती है।"},{"ja":"弟は試合に負けて、とても悔しがっていた。","zh":"弟弟輸了比賽，非常不甘心。","si":"මල්ලි තරඟෙන් පැරදිලා ගොඩක් කණගාටු වුණා.","ne":"भाइ खेलमा हारेर निकै रिसाएका थिए।","hi":"मेरा छोटा भाई मैच हारकर बहुत खिन्न था।"}]},{"id":"⑤","pattern":"Vたとたん（に）","note":"〜した瞬間に（意外・突然）","sentences":[{"ja":"家を出たとたん、雨が降ってきた。","zh":"我一出門，就下起雨來了。","si":"ගෙදරින් පිට වෙච්ච ගමන්ම, වහින්න පටන් ගත්තා.","ne":"घरबाट निस्केको बित्तिकै, पानी पर्न थाल्यो।","hi":"घर से निकलते ही, बारिश शुरू हो गई।"},{"ja":"ベッドに入ったとたん、眠ってしまった。","zh":"我一上床，就睡著了。","si":"ඇඳට ගිය ගමන්ම, නිදිවැටුණා.","ne":"ओछ्यानमा पल्टनेबित्तिकै, निदाएँ।","hi":"बिस्तर पर लेटते ही, मुझे नींद आ गई।"},{"ja":"ドアを開けたとたん、冷たい風が入ってきた。","zh":"我一打開門，冷風就吹了進來。","si":"දොර ඇරිය ගමන්ම, සීතල හුළඟක් ඇතුළට ආවා.","ne":"ढोका खोल्नेबित्तिकै, चिसो हावा भित्र पस्यो।","hi":"दरवाज़ा खोलते ही, ठंडी हवा अंदर आ गई।"}]},{"id":"⑥","pattern":"Vだす","note":"急に〜し始める","sentences":[{"ja":"赤ちゃんが急に泣き出した。","zh":"嬰兒突然哭了起來。","si":"බබා හදිසියේම අඬන්න පටන් ගත්තා.","ne":"बच्चा अचानक रुन थाल्यो।","hi":"बच्चा अचानक रोने लगा।"},{"ja":"空が暗くなって、雨が降り出した。","zh":"天色暗了下來，開始下起雨來。","si":"අහස අඳුරු වෙලා, වහින්න පටන් ගත්තා.","ne":"आकाश अँध्यारो भयो र पानी पर्न थाल्यो।","hi":"आसमान में अँधेरा छा गया और बारिश होने लगी।"},{"ja":"彼は何も言わずに走り出した。","zh":"他什麼都沒說就跑了起來。","si":"එයා මුකුත් කියන්නේ නැතුව දුවන්න පටන් ගත්තා.","ne":"उनले केही नभनी दौडन थाले।","hi":"वह कुछ कहे बिना दौड़ने लगा।"}]}],"langAccents":{"zh":"#b8423a","si":"#2f8f7e","ne":"#a8324a","hi":"#d98324"}};
+const { META, ITEMS, langAccents } = DATA;
+let lang = META.langs[0].key;
+let allShown = false;
+
+document.getElementById("sub").textContent = META.subtitle;
+document.getElementById("level").textContent = "レベル：" + META.level;
+
+const pills = document.getElementById("pills");
+META.langs.forEach(l=>{
+  const b=document.createElement("button");
+  b.className="pill"; b.textContent=l.label; b.dataset.key=l.key;
+  b.onclick=()=>{ lang=l.key; allShown=false; render(); };
+  pills.appendChild(b);
+});
+
+function render(){
+  document.documentElement.style.setProperty("--accent-lang", langAccents[lang]);
+  [...pills.children].forEach(b=> b.classList.toggle("on", b.dataset.key===lang));
+  document.getElementById("toggleAll").textContent = allShown ? "答えをすべて隠す" : "答えをすべて表示";
+
+  const c=document.getElementById("content");
+  c.innerHTML="";
+  ITEMS.forEach(item=>{
+    const card=document.createElement("div"); card.className="card";
+    card.innerHTML =
+      '<div class="ptn"><span class="badge">'+item.id+'</span><h2>'+item.pattern+'</h2></div>'+
+      '<div class="note">'+item.note+'</div>';
+    item.sentences.forEach((s,i)=>{
+      const q=document.createElement("div"); q.className="q";
+      const cue=esc(s[lang]);
+      q.innerHTML =
+        '<span class="num">'+(i+1)+'</span>'+
+        '<p class="cue '+lang+'">'+cue+'</p>'+
+        '<textarea rows="1" placeholder="ここに日本語で書く…"></textarea>'+
+        '<div class="reveal"><button class="rbtn">答えを見る ▾</button>'+
+        '<div class="ans'+(allShown?' show':'')+'"><span class="tag">日本語</span>'+esc(s.ja)+'</div></div>';
+      const btn=q.querySelector(".rbtn"); const ans=q.querySelector(".ans");
+      btn.onclick=()=>{ ans.classList.toggle("show");
+        btn.textContent = ans.classList.contains("show") ? "答えを隠す ▴" : "答えを見る ▾"; };
+      const ta=q.querySelector("textarea");
+      ta.addEventListener("input",()=>{ ta.style.height="auto"; ta.style.height=ta.scrollHeight+"px"; });
+      card.appendChild(q);
+    });
+    c.appendChild(card);
+  });
+}
+function esc(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+document.getElementById("toggleAll").onclick=()=>{ allShown=!allShown; render(); };
+render();
+</script>
+</body>
+</html>
