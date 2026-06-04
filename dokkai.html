@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>読解：クロって名前の、とんでもない犬</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf6ee; --ink:#2c2a28; --muted:#8a8378; --line:#e3dccd;
+    --vocab:#3a5a8c; --vocab-soft:#eef2f8;
+    --gram:#c2772e; --gram-soft:#fdf1e0;
+    --ok:#2f8f7e; --ok-soft:#e7f3f0;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Zen Kaku Gothic New",sans-serif; line-height:1.7;
+    background-image:radial-gradient(var(--line) 0.5px, transparent 0.5px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:720px; margin:0 auto; padding:30px 20px 90px;}
+  .eyebrow{font-size:.78rem; letter-spacing:.18em; color:var(--gram); font-weight:700;}
+  h1{font-family:"Shippori Mincho",serif; font-weight:700; font-size:1.85rem; margin:4px 0 6px; line-height:1.35;}
+  .level{display:inline-block; font-size:.76rem; color:var(--vocab);
+    background:var(--vocab-soft); border:1px solid #d7e0ee; padding:2px 12px; border-radius:99px;}
+
+  .legend{display:flex; flex-wrap:wrap; gap:14px; align-items:center;
+    margin:20px 0 6px; font-size:.82rem; color:var(--muted);}
+  .key{display:inline-flex; align-items:center; gap:6px;}
+  .swatch{width:22px; height:12px; border-radius:3px; display:inline-block;}
+  .sw-v{background:var(--vocab-soft); border-bottom:2px dotted var(--vocab);}
+  .sw-g{background:var(--gram-soft); border-bottom:2px solid var(--gram);}
+  .hint{font-size:.8rem; color:var(--muted); margin:2px 0 18px;}
+
+  .controls{display:flex; gap:8px; margin-bottom:14px;}
+  .btn{background:#fff; border:1.5px solid var(--line); color:var(--ink);
+    padding:7px 14px; border-radius:9px; font-size:.84rem; cursor:pointer; font-family:inherit;}
+  .btn:hover{border-color:var(--vocab);}
+  .btn.on{background:var(--vocab); border-color:var(--vocab); color:#fff;}
+
+  .reading{position:relative; background:#fff; border:1px solid var(--line);
+    border-radius:16px; padding:26px 26px 22px; box-shadow:0 1px 0 rgba(0,0,0,.02);}
+  .reading p{font-family:"Klee One",serif; font-size:1.2rem; line-height:2.15; margin:0 0 1.15em;}
+  .reading p:last-child{margin-bottom:0;}
+
+  .gloss,.gram{cursor:help; border-radius:3px; padding:0 1px; transition:background .15s; white-space:nowrap;}
+  .gloss{border-bottom:2px dotted var(--vocab);}
+  .gloss:hover,.gloss.act{background:var(--vocab-soft);}
+  .gram{background:var(--gram-soft); border-bottom:2px solid var(--gram);}
+  .gram:hover,.gram.act{background:#fbe6c8;}
+  ruby rt{font-family:"Zen Kaku Gothic New",sans-serif; font-size:.55em; color:var(--muted); font-weight:500;}
+
+  #tip{position:absolute; z-index:30; max-width:260px; display:none;
+    background:#2c2a28; color:#fff; border-radius:10px; padding:10px 13px;
+    font-family:"Zen Kaku Gothic New",sans-serif; font-size:.86rem; line-height:1.55;
+    box-shadow:0 8px 24px rgba(0,0,0,.18);}
+  #tip::after{content:""; position:absolute; left:var(--ax,50%); bottom:-7px; transform:translateX(-50%);
+    border:7px solid transparent; border-top-color:#2c2a28; border-bottom:0;}
+  #tip.below::after{top:-7px; bottom:auto; border-top:0; border-bottom-color:#2c2a28;}
+  #tip .label{font-size:.68rem; letter-spacing:.1em; opacity:.7; display:block; margin-bottom:2px;}
+  #tip .head{font-weight:700; font-size:1rem; margin-bottom:3px;}
+  #tip.g .head{color:#ffcf8f;}
+  #tip.v .head{color:#a9c6ef;}
+  #tip .en{opacity:.7; font-size:.8rem; margin-top:3px;}
+
+  .quiz{margin-top:26px; background:var(--ok-soft); border:1px solid #cfe6e0;
+    border-radius:16px; padding:20px 22px;}
+  .quiz h2{font-family:"Shippori Mincho",serif; font-size:1.15rem; margin:0 0 12px; color:#246b5d;}
+  .q{margin:0 0 12px; font-size:1rem;}
+  .q .num{color:var(--ok); font-weight:700; margin-right:6px;}
+  .qa{display:none; margin-top:5px; font-family:"Klee One",serif; color:#1f5a4e; font-size:.98rem;}
+  .qa.show{display:block;}
+  .abtn{background:none; border:1px solid var(--ok); color:var(--ok);
+    font-size:.78rem; padding:3px 10px; border-radius:7px; cursor:pointer; font-family:inherit; margin-top:4px;}
+  footer{text-align:center; color:var(--muted); font-size:.78rem; margin-top:28px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">日本語 読解（中級〜中上級）</div>
+  <h1>クロって名前の、とんでもない犬</h1>
+  <span class="level">前回の文法 ①〜⑥ 全部入り</span>
+
+  <div class="legend">
+    <span class="key"><span class="swatch sw-v"></span>語彙（読み方・意味）</span>
+    <span class="key"><span class="swatch sw-g"></span>文法ポイント</span>
+  </div>
+  <div class="hint">色のついた言葉を <b>マウスオーバー（スマホはタップ）</b> すると、読み方・意味・文法の説明が出ます。</div>
+
+  <div class="controls">
+    <button class="btn" id="furiBtn">ふりがなを表示</button>
+  </div>
+
+  <div class="reading" id="reading">
+    <p>うちには「<span class="gram" data-g="N1ってN2" data-n="「〜という名前の／〜という」。「って」は「という」のくだけた言い方。">クロ</span>」<span class="gram" data-g="N1ってN2" data-n="「〜という名前の〜」。って＝という。">って名前</span>の犬がいる。父がどうしてもこの名前を<span class="gram" data-g="〜たがる" data-n="他の人が「〜したい」と思っている様子。「〜たい」＋「がる」。">つけたがった</span>のだ。でも、クロは<span class="gloss" data-y="くろ" data-m="色の名前。すみのような色。" data-e="black">黒く</span>ない。<span class="gloss" data-y="ちゃいろ" data-m="コーヒーのような色。" data-e="brown">茶色</span>だ。</p>
+
+    <p>ある朝、私が<span class="gloss" data-y="げんかん" data-m="家の出入り口。" data-e="entrance / doorway">玄関</span>を<span class="gram" data-g="Vたとたん" data-n="〜した、ちょうどその瞬間に。意外なことが続くときに使う。">出たとたん</span>、クロが<span class="gloss" data-y="ぜんりょく" data-m="持っている力のすべて。" data-e="full power / all one's might">全力</span>で<span class="gram" data-g="Vだす" data-n="急に〜し始める。動作が突然始まること。">走り出した</span>。<span class="gloss" data-y="きんじょ" data-m="家の近くのあたり。" data-e="neighborhood">近所</span>の猫を<span class="gloss" data-y="おいかけて" data-m="逃げるものの後ろを走って追う。" data-e="to chase after">追いかけて</span>行ったのだ。私は朝ごはんも<span class="gram" data-g="させてもらう" data-n="〜することを許してもらう。ここは否定で「許してもらえない」。">食べさせてもらえない</span>まま、一時間も<span class="gram" data-g="させられる" data-n="いやなのに、無理に〜させられる（強制）。走る→走らされる。">走らされた</span>。</p>
+
+    <p>やっと<span class="gloss" data-y="つかまえる" data-m="逃げるものを手でとる。" data-e="to catch">捕まえる</span>と、クロは「もう一回やりたい」という顔で、しっぽを<span class="gloss" data-y="ふって" data-m="左右に動かす。犬がうれしいときの動き。" data-e="to wag">振って</span>いる。<span class="gloss" data-y="いもうと" data-m="年下の女のきょうだい。" data-e="younger sister">妹</span>はそれを見て「お兄ちゃん、また負けたの？」と、私の<span class="gram" data-g="〜がる" data-n="他の人の感情が外に出ること。「悔しい」→「悔しがる」。">悔しがる</span>顔をスマホで<span class="gram" data-g="Vだす" data-n="急に〜し始める。「撮り＋だす」で、急に撮り始めるようす。">撮りだした</span>。<span class="gloss" data-y="さいあく" data-m="いちばん悪い状態。" data-e="the worst">最悪</span>だ。</p>
+
+    <p>でも、夜になると、クロは私のとなりで<span class="gloss" data-y="しずか" data-m="音がなくて落ち着いている。" data-e="quiet / calm">静か</span>に<span class="gloss" data-y="ねむる" data-m="目を閉じて寝る。" data-e="to sleep">眠る</span>。父は「<span class="gloss" data-y="おまえ" data-m="「君」のくだけた・少し強い言い方。" data-e="\"you\" (casual, rough)">お前</span>にだけは<span class="gloss" data-y="なついて" data-m="動物が人に親しんで近づく。" data-e="to take to / grow attached">なついて</span>いるな」と、私に<span class="gloss" data-y="せわ" data-m="めんどうをみること。" data-e="care / looking after">世話</span>を全部<span class="gram" data-g="させてくれる" data-n="好意で〜することを許してくれる（プラスの気持ち）。">やらせてくれる</span>……いや、<span class="gram" data-g="させられる" data-n="強制で〜させられる（マイナスの気持ち）。同じ場面でも見方でこんなに変わる！">やらされて</span>いる。どっちなんだろう。</p>
+
+    <p>まあ、<span class="gram" data-g="N1ってN2" data-n="「〜という〜」。って＝という。">クロって犬</span>は、<span class="gloss" data-y="こまった" data-m="どうすればいいか分からなくて大変な。" data-e="troublesome">困った</span><span class="gloss" data-y="そんざい" data-m="そこに「いること・あること」。" data-e="existence / presence">存在</span>だけど、いなくなったら、たぶん私が一番<span class="gram" data-g="〜がる" data-n="他の人（ここでは自分を客観的に）の感情が外に出る。「さびしい」→「さびしがる」。">さびしがる</span>だろう。</p>
+
+    <div id="tip"></div>
+  </div>
+
+  <div class="quiz">
+    <h2>内容を確かめよう</h2>
+    <div class="q"><span class="num">1.</span>クロは本当は何色ですか。
+      <button class="abtn">答え</button><div class="qa">茶色です。（黒くないのに「クロ」という名前）</div></div>
+    <div class="q"><span class="num">2.</span>「私」はなぜ一時間も走らされたのですか。
+      <button class="abtn">答え</button><div class="qa">クロが近所の猫を追いかけて走り出したので、追いかけて捕まえようとしたから。</div></div>
+    <div class="q"><span class="num">3.</span>最後の「やらせてくれる……いや、やらされている」で、「私」は何を言いたいのですか。
+      <button class="abtn">答え</button><div class="qa">世話を「させてもらえる（好意）」のか「させられている（強制）」のか、自分でも分からない、という気持ち。同じ出来事でも見方で意味が変わるという冗談。</div></div>
+    <div class="q"><span class="num">★</span>文法さがし：本文から「させられる」の形を全部見つけよう。
+      <button class="abtn">答え</button><div class="qa">「走らされた」「やらされて（いる）」の2つ。</div></div>
+  </div>
+
+  <footer>登場：クロ（茶色）。文法 N1ってN2／させてもらう・くれる／させられる／〜がる／Vたとたん／Vだす</footer>
+</div>
+
+<script>
+  const reading = document.getElementById("reading");
+  const tip = document.getElementById("tip");
+  let pinned = null;
+
+  function fillTip(el){
+    const isGram = el.classList.contains("gram");
+    tip.className = isGram ? "g" : "v";
+    if(isGram){
+      tip.innerHTML = '<span class="label">文法 GRAMMAR</span>'+
+        '<div class="head">'+el.dataset.g+'</div>'+esc(el.dataset.n);
+    } else {
+      tip.innerHTML = '<span class="label">ことば WORD</span>'+
+        '<div class="head">'+el.dataset.y+'</div>'+esc(el.dataset.m)+
+        (el.dataset.e ? '<div class="en">'+esc(el.dataset.e)+'</div>' : '');
+    }
+  }
+  function showTip(el){
+    fillTip(el);
+    tip.style.display="block";
+    const cr = reading.getBoundingClientRect();
+    const er = el.getBoundingClientRect();
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    let left = (er.left - cr.left) + er.width/2 - tw/2;
+    left = Math.max(8, Math.min(left, reading.clientWidth - tw - 8));
+    let top = (er.top - cr.top) - th - 12;
+    tip.classList.remove("below");
+    if(top < 4){ top = (er.bottom - cr.top) + 12; tip.classList.add("below"); }
+    const arrow = (er.left - cr.left) + er.width/2 - left;
+    tip.style.setProperty("--ax", arrow+"px");
+    tip.style.left = left+"px";
+    tip.style.top = top+"px";
+  }
+  function hideTip(){ tip.style.display="none"; if(pinned){pinned.classList.remove("act"); pinned=null;} }
+  function esc(t){return (t||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+  document.querySelectorAll(".gloss,.gram").forEach(el=>{
+    el.addEventListener("mouseenter",()=>{ if(!pinned) showTip(el); });
+    el.addEventListener("mouseleave",()=>{ if(!pinned) tip.style.display="none"; });
+    el.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      if(pinned===el){ hideTip(); return; }
+      if(pinned) pinned.classList.remove("act");
+      pinned=el; el.classList.add("act"); showTip(el);
+    });
+  });
+  document.addEventListener("click",()=>{ if(pinned) hideTip(); });
+
+  // furigana toggle (vocab words only)
+  const fb = document.getElementById("furiBtn");
+  let furi=false;
+  document.querySelectorAll(".gloss").forEach(el=> el.dataset.orig = el.textContent);
+  fb.addEventListener("click",()=>{
+    furi=!furi; fb.classList.toggle("on",furi);
+    fb.textContent = furi ? "ふりがなを隠す" : "ふりがなを表示";
+    document.querySelectorAll(".gloss").forEach(el=>{
+      el.innerHTML = furi ? '<ruby>'+esc(el.dataset.orig)+'<rt>'+esc(el.dataset.y)+'</rt></ruby>' : esc(el.dataset.orig);
+    });
+  });
+
+  document.querySelectorAll(".abtn").forEach(b=>{
+    b.addEventListener("click",()=>{ const a=b.nextElementSibling; a.classList.toggle("show");
+      b.textContent = a.classList.contains("show") ? "隠す" : "答え"; });
+  });
+</script>
+</body>
+</html>
